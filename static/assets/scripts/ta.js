@@ -1,9 +1,5 @@
 window.addEventListener("load", () => {
-  navigator.serviceWorker.register("../sw.js?v=5-5-2024", {
-    scope: "/a/",
-  })
-})
-window.addEventListener("load", () => {
+  navigator.serviceWorker.register("../sw.js?v=5-5-2024", { scope: "/a/" })
   const form = document.getElementById("fs")
   const input = document.getElementById("is")
   if (form && input) {
@@ -49,6 +45,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
     const newTab = document.createElement("li")
     const tabTitle = document.createElement("span")
     const newIframe = document.createElement("iframe")
+    newIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-orientation-lock"
+    // When Top Navigation is not allowed links with the "top" value will be entirely blocked, if we allow Top Navigation it will overwrite the tab, which is obviously not wanted.
     tabTitle.textContent = `New Tab ${tabCounter}`
     tabTitle.className = "tab-title"
     newTab.dataset.tabId = tabCounter
@@ -71,9 +69,14 @@ document.addEventListener("DOMContentLoaded", function (event) {
     newIframe.addEventListener("load", () => {
       const title = newIframe.contentDocument.title
       if (title.length <= 1) {
-        tabTitle.textContent = "New Tab"
+        tabTitle.textContent = ""
       } else {
         tabTitle.textContent = title
+      }
+      newIframe.contentWindow.open = function (url) {
+        sessionStorage.setItem("URL", "/a/" + __uv$config.encodeUrl(url))
+        createNewTab()
+        return null
       }
       if (newIframe.contentDocument.documentElement.outerHTML.trim().length > 0) {
         Load()
@@ -81,8 +84,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
       Load()
     })
     const GoURL = sessionStorage.getItem("GoUrl")
+    const URL = sessionStorage.getItem("URL")
 
-    if (tabCounter === 1) {
+    if (tabCounter === 0 || tabCounter === 1) {
       if (GoURL !== null) {
         if (GoURL.includes("/e/")) {
           newIframe.src = window.location.origin + GoURL
@@ -92,9 +96,21 @@ document.addEventListener("DOMContentLoaded", function (event) {
       } else {
         newIframe.src = "/"
       }
-    } else {
-      newIframe.src = "/"
+    } else if (tabCounter > 1) {
+      if (URL !== null) {
+        newIframe.src = window.location.origin + URL
+        sessionStorage.removeItem("URL")
+      } else if (GoURL !== null) {
+        if (GoURL.includes("/e/")) {
+          newIframe.src = window.location.origin + GoURL
+        } else {
+          newIframe.src = window.location.origin + "/a/" + GoURL
+        }
+      } else {
+        newIframe.src = "/"
+      }
     }
+
     iframeContainer.appendChild(newIframe)
     tabCounter += 1
   }
@@ -286,22 +302,23 @@ function goForward() {
   }
 }
 // Remove Nav
-document.addEventListener("fullscreenchange", function () {
-  const isFullscreen = Boolean(document.fullscreenElement)
-  document.body.classList.toggle("fullscreen", isFullscreen)
-})
 document.addEventListener("DOMContentLoaded", function () {
-  var navIcon = document.getElementById("nav-icon")
-  var navBar = document.getElementById("right-side-nav")
-  const activeIframe = document.querySelector("#iframe-container iframe.active")
-  console.log(navIcon)
-  navIcon.addEventListener("click", function () {
-    var isOpen = navBar.classList.toggle("hidden")
-    this.classList.toggle("open")
-    if (isOpen) {
-      activeIframe.style.top = "5%"
+  const TB = document.getElementById("tabs-button")
+  const NB = document.getElementById("right-side-nav")
+  TB.addEventListener("click", function () {
+    const activeIframe = document.querySelector("#iframe-container iframe.active")
+    if (NB.style.display === "none") {
+      NB.style.display = ""
+      activeIframe.style.top = "10%"
+      activeIframe.style.height = "90%"
+      TB.querySelector("i").classList.remove("fa-magnifying-glass-plus")
+      TB.querySelector("i").classList.add("fa-magnifying-glass-minus")
     } else {
-      activeIframe.style.top = "13%"
+      NB.style.display = "none"
+      activeIframe.style.top = "5%"
+      activeIframe.style.height = "95%"
+      TB.querySelector("i").classList.remove("fa-magnifying-glass-minus")
+      TB.querySelector("i").classList.add("fa-magnifying-glass-plus")
     }
   })
 })
@@ -336,7 +353,6 @@ function decodeXor(input) {
     return input
   }
   let [str, ...search] = input.split("?")
-
   return (
     decodeURIComponent(str)
       .split("")

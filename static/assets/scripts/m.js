@@ -1,51 +1,69 @@
-// Ads
-document.addEventListener("DOMContentLoaded", function () {
-  if (localStorage.getItem("ad") === null || localStorage.getItem("ad") === "default") {
-    localStorage.setItem("ad", "on")
+/*
+LICENSE_SERVER_URL = "https://main.gointerstellar.app/validate?license="
+async function checkLicense(pass) {
+  if (localStorage["LICENSE_CHECK"]) {
+    return true
+  }
+  licenseCheck = (await (await fetch(LICENSE_SERVER_URL + pass + "&host=" + location.origin)).json())["status"]
+  if (licenseCheck == "License valid") {
+    localStorage["LICENSE_CHECK"] = true
+    return true
+  }
+  return false
+} */
+
+/* document.addEventListener("DOMContentLoaded", function () {
+  let ads = localStorage.getItem("ads")
+  if (ads === null || ads === "default" || ads === "true") {
+    localStorage.setItem("ads", "on")
+    ads = "on"
+  } else if (ads === "popups") {
+    ads = "popups"
+  } else if (ads === "off2") {
+    ads = "off2"
   }
 
-  var advDiv = document.getElementById("adv")
-  if (advDiv && localStorage.getItem("ad") === "on") {
-    var script = document.createElement("script")
-    script.type = "text/javascript"
-    script.src = "//oysterscoldtiny.com/1c/c3/8a/1cc38a6899fdf8ba4dfe779bcc54627b.js"
-    advDiv.appendChild(script)
-  } else if (advDiv && localStorage.getItem("ad") === "off") {
-    advDiv.remove()
+  let div = document.getElementById("adv")
+  let div2 = document.getElementById("adv2")
+  if (div) {
+    if (ads === "on") {
+      let scripts = ["//alleygoat.com/4d/2f/92/4d2f92b8c68718dd3efb74b9f9b5fa4e.js", "//alleygoat.com/87/17/b8/8717b825d69c8461460199fb3c6249e4.js"]
+
+      scripts.forEach(function (src) {
+        let script = document.createElement("script")
+        script.type = "text/javascript"
+        script.src = src
+        div.appendChild(script)
+      })
+    } else if (ads === "popups") {
+      let scripts = ["//alleygoat.com/4d/2f/92/4d2f92b8c68718dd3efb74b9f9b5fa4e.js"]
+
+      scripts.forEach(function (src) {
+        let script = document.createElement("script")
+        script.type = "text/javascript"
+        script.src = src
+        div.appendChild(script)
+      })
+    } else if (ads === "off2") {
+      advDiv.remove()
+    }
+  } else if (div2 && ads != "off2") {
+    let scripts = ["//alleygoat.com/4d/2f/92/4d2f92b8c68718dd3efb74b9f9b5fa4e.js"]
+    scripts.forEach(function (src) {
+      let script = document.createElement("script")
+      script.type = "text/javascript"
+      script.src = src
+      div.appendChild(script)
+    })
   }
 })
+*/
 // Dynamic & Ads
 document.addEventListener("DOMContentLoaded", function () {
   if (localStorage.getItem("dy") === null || localStorage.getItem("dy") === undefined) {
     localStorage.setItem("dy", "false")
   }
 })
-// Clear Cache
-function Clear() {
-  document.cookie.split("; ").forEach(function (cookie) {
-    var cookieName = cookie.split("=")[0]
-    document.cookie = cookieName + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT"
-  })
-
-  localStorage.clear()
-  sessionStorage.clear()
-
-  if (caches && caches.keys) {
-    caches.keys().then(function (cacheNames) {
-      return Promise.all(
-        cacheNames.map(function (cacheName) {
-          return caches.delete(cacheName)
-        })
-      )
-    })
-  }
-}
-
-if (localStorage.getItem("cache") !== "3") {
-  Clear()
-  localStorage.setItem("cache", "3")
-}
-
 // Nav
 var nav = document.querySelector(".fixed-nav-bar")
 
@@ -57,7 +75,8 @@ if (nav) {
     <div class="fixed-nav-bar-right">
       <a class="navbar-link" href="/./gm"><i class="fa-solid fa-gamepad navbar-icon"></i><an>Ga</an><an>mes</an></a>
       <a class="navbar-link" href="/./as"><i class="fa-solid fa-phone navbar-icon"></i><an>Ap</an><an>ps</an></a>
-      ${window.top.location.pathname !== "/ta" ? '<a class="navbar-link" href="/./ta"><i class="fa-solid fa-laptop navbar-icon"></i><an>Ta</an><an>bs</an></a>' : ""}
+      <a class="navbar-link" href="/./ts"><i class="fa-solid fa-folder navbar-icon"></i><an>To</an><an>ols</an></a>
+      ${!(window.top !== window || window.location.pathname === "/ta") ? '<a class="navbar-link" href="/./ta"><i class="fa-solid fa-laptop navbar-icon"></i><an>Ta</an><an>bs</an></a>' : ""}
       <a class="navbar-link" href="/./st"><i class="fa-solid fa-gear navbar-icon settings-icon"></i><an>Set</an><an>tings</an></a>
     </div>`
   nav.innerHTML = html
@@ -69,17 +88,25 @@ themeEle = document.createElement("link")
 themeEle.rel = "stylesheet"
 if (themeid == "catppuccinMocha") {
   themeEle.href = "/assets/styles/themes/catppuccin/mocha.css?v=1"
+  document.body.appendChild(themeEle)
 }
 if (themeid == "catppuccinMacchiato") {
   themeEle.href = "/assets/styles/themes/catppuccin/macchiato.css?v=1"
+  document.body.appendChild(themeEle)
 }
 if (themeid == "catppuccinFrappe") {
   themeEle.href = "/assets/styles/themes/catppuccin/frappe.css?v=1"
+  document.body.appendChild(themeEle)
 }
 if (themeid == "catppuccinLatte") {
   themeEle.href = "/assets/styles/themes/catppuccin/latte.css?v=1"
+  document.body.appendChild(themeEle)
 }
-document.body.appendChild(themeEle)
+else {
+  var customThemeEle = document.createElement("style");
+  customThemeEle.textContent = localStorage.getItem("theme-"+themeid);
+  document.head.appendChild(customThemeEle);
+}
 // Tab Cloaker
 document.addEventListener("DOMContentLoaded", function (event) {
   const icon = document.getElementById("tab-favicon")
@@ -109,6 +136,17 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
   const options = {
     Google: { name: "Google", icon: "/assets/media/favicon/google.png" },
+    "Savvas Realize": { name: "Savvas Realize", icon: "/assets/media/favicon/savvas-realize.png" },
+    SmartPass: { name: "SmartPass", icon: "/assets/media/favicon/smartpass.png" },
+    "World Book Online - Super Home": { name: "Super Home Page", icon: "/assets/media/favicon/wbo.ico" },
+    "World Book Online - Student": { name: "WBO Student | Home Page", icon: "/assets/media/favicon/wbo.ico" },
+    "World Book Online - Timelines": { name: "Timelines - Home Page", icon: "/assets/media/favicon/wbo.ico" },
+    Naviance: { name: "Naviance Student", icon: "/assets/media/favicon/naviance.png" },
+    "PBS Learning Media": {
+      name: "PBS LearningMedia | Teaching Resources For Students And Teachers",
+      icon: "/assets/media/favicon/pbslearningmedia.ico",
+    },
+    "PBS Learning Media Student Home": { name: "Student Homepage | PBS LearningMedia", icon: "/assets/media/favicon/pbslearningmedia.ico" },
     Drive: { name: "My Drive - Google Drive", icon: "/assets/media/favicon/drive.png" },
     Classroom: { name: "Home", icon: "/assets/media/favicon/classroom.png" },
     Schoology: { name: "Home | Schoology", icon: "/assets/media/favicon/schoology.png" },
